@@ -2,7 +2,6 @@
 <html lang="bn">
 <head>
 <meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>Admin - Ad Control</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
@@ -11,21 +10,12 @@
 <body class="bg-gray-100 p-6">
   <div class="max-w-xl mx-auto space-y-6">
     <div class="bg-white p-6 rounded-xl shadow-md">
-      <h2 class="text-xl font-bold mb-4">Ad Settings</h2>
-      
-      <label class="block text-sm font-medium mb-1">Zone 1 (Video Script ID)</label>
-      <input id="z1" type="text" placeholder="Ex: 1101" class="w-full border p-2 rounded mb-4">
-
-      <label class="block text-sm font-medium mb-1">Zone 2 (Direct Link URL)</label>
-      <input id="z2" type="text" placeholder="https://..." class="w-full border p-2 rounded mb-4">
-
-      <button onclick="saveAds()" class="w-full bg-purple-700 text-white py-2 rounded font-bold">Save Settings</button>
+      <h2 class="font-bold mb-4 text-xl">অ্যাড সেটিংস</h2>
+      <input id="z1" type="text" placeholder="Zone 1 ID (Video)" class="w-full border p-2 mb-4 rounded">
+      <input id="z2" type="text" placeholder="Zone 2 Link (URL)" class="w-full border p-2 mb-4 rounded">
+      <button onclick="saveAds()" class="w-full bg-purple-700 text-white py-2 rounded">Save</button>
     </div>
-
-    <div class="bg-white p-4 rounded-xl shadow-md">
-      <h2 class="font-bold mb-4">User List</h2>
-      <div id="userList" class="space-y-2"></div>
-    </div>
+    <div id="userList" class="bg-white p-4 rounded shadow-md"></div>
   </div>
 
 <script>
@@ -40,30 +30,18 @@
   firebase.initializeApp(firebaseConfig);
   const db = firebase.firestore();
 
-  // Load Current Settings
-  db.collection("settings").doc("ads").get().then(doc => {
-    if(doc.exists) {
-      document.getElementById("z1").value = doc.data().zone1 || "";
-      document.getElementById("z2").value = doc.data().zone2 || "";
-    }
-  });
-
   function saveAds() {
     const zone1 = document.getElementById("z1").value;
     const zone2 = document.getElementById("z2").value;
-    db.collection("settings").doc("ads").set({ zone1, zone2 })
-      .then(() => alert("Settings Updated!"));
+    db.collection("settings").doc("ads").set({ zone1, zone2 }).then(() => alert("Saved!"));
   }
 
-  // User List
   db.collection("users").onSnapshot(snap => {
     const list = document.getElementById("userList");
-    list.innerHTML = "";
+    list.innerHTML = "<h2 class='font-bold mb-2'>ইউজার লিস্ট:</h2>";
     snap.forEach(doc => {
       const u = doc.data();
-      list.innerHTML += <div class="p-2 border-b flex justify-between">
-        <span>${u.id}</span> <b>${u.balance.toFixed(2)} ৳</b>
-      </div>;
+      list.innerHTML += <div class='border-b p-2'>ID: ${u.id} - <b>${u.balance.toFixed(2)} ৳</b></div>;
     });
   });
 </script>
